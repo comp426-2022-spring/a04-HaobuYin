@@ -71,7 +71,7 @@ app.use( (req, res, next) => {
     })
 
 // Set up the access logging middleware
-if (log!==false){
+if (log!=='false'){
     const WRITESTREAM = fs.createWriteStream('./access.log', { flags: 'a' })
     app.use(morgan('combined', { stream: WRITESTREAM }))
 }
