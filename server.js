@@ -37,7 +37,6 @@ const logging = (req, res, next) =>{
 )
 */
 let debug = false;
-let log = true;
 const args = require('minimist')(process.argv.slice(2))
 //args['port']
 console.log(args)
@@ -50,8 +49,29 @@ const server = app.listen(port, () => {
 })
 
 // logging middleware
+
+app.use( (req, res, next) => {
+    let logdata = {
+        remoteaddr: req.ip,
+        remoteuser: req.user,
+        time: Date.now(),
+        method: req.method,
+        url: req.url,
+        protocol: req.protocol,
+        httpversion: req.httpVersion,
+        status: res.statusCode,
+        referer: req.headers['referer'],
+        useragent: req.headers['user-agent']
+    }
+    const stmt = logdb.prepare('INSERT INTO accesslog (remoteaddr, remoteuser, date, method, url, protocol, httpversion, status, referrer_url, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, 
+        logdata.url, logdata.protocol, logdata.httpversion, logdata.status, logdata.referer, logdata.useragent)
+    console.log(info)
+    next();
+    })
+
 // Set up the access logging middleware
-if (log===true){
+if (log!==false){
     const WRITESTREAM = fs.createWriteStream('./access.log', { flags: 'a' })
     app.use(morgan('combined', { stream: WRITESTREAM }))
 }
@@ -91,7 +111,6 @@ if (debug === true){
     app.get("/app/log/access", (req, res, next) => {
         const content = logdb.prepare('SELECT * FROM accesslog').all()
         res.status(200).json(content)
-        console.log('code reached')
     });
     
     app.get('/app/error', (req, res) => {
@@ -150,27 +169,6 @@ app.use(function(req, res){
     res.status(404).send('404 NOT FOUND')
 })
 
-
-// database
-app.use( (req, res, next) => {
-    // Your middleware goes here.
-    let logdata = {
-        remoteaddr: req.ip,
-        remoteuser: req.user,
-        time: Date.now(),
-        method: req.method,
-        url: req.url,
-        protocol: req.protocol,
-        httpversion: req.httpVersion,
-        status: res.statusCode,
-        referer: req.headers['referer'],
-        useragent: req.headers['user-agent']
-    }
-    const stmt = logdb.prepare('INSERT INTO accesslog (remoteaddr, remoteuser, date, method, url, protocol, httpversion, status, referrer_url, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-    const info = stmt.run(logdata.remoteaddr, logdata.remoteuser, logdata.time, logdata.method, 
-        logdata.url, logdata.protocol, logdata.httpversion, logdata.status, logdata.referer, logdata.useragent)
-    console.log(info)
-    })
 
 // functions
 function coinFlip() {
