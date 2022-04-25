@@ -1,0 +1,33 @@
+{
+  "name": "a04",
+  "version": "1.0.0",
+  "description": "a04 API middleware error and log",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comp426-2022-spring/a04-HaobuYin.git"
+  },
+  "keywords": [
+    "a04",
+    "api",
+    "error",
+    "log"
+  ],
+  "author": "Haobu Yin",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/comp426-2022-spring/a04-HaobuYin/issues"
+  },
+  "homepage": "https://github.com/comp426-2022-spring/a04-HaobuYin#readme",
+  "dependencies": {
+    "better-sqlite3": "^7.5.1",
+    "express": "^4.17.3",
+    "minimist": "^1.2.6",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.15"
+  }
+}
